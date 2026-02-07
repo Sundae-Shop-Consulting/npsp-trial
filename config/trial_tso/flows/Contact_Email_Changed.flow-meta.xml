@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Preferred_Email</name>
+        <label>Preferred Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Default_Preferred_to_Work</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Alternate</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.npe01__Preferred_Email__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Alternate</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Alternate_Email</targetReference>
+            </connector>
+            <label>Alternate</label>
+        </rules>
+        <rules>
+            <name>Work</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.npe01__Preferred_Email__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Work</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Work_Email</targetReference>
+            </connector>
+            <label>Work</label>
+        </rules>
+        <rules>
+            <name>Personal</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.npe01__Preferred_Email__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Personal</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Personal_Email</targetReference>
+            </connector>
+            <label>Personal</label>
+        </rules>
+    </decisions>
+    <description>Updates corresponding email field based on Preferred Email; defaults to Work Email and sets that as the Preferred Email if preference is unspecified.</description>
+    <environments>Default</environments>
+    <interviewLabel>Contact: Email Changed {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Contact: Email Changed</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Default_Preferred_to_Work</name>
+        <label>Default Preferred to Work</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>npe01__Preferred_Email__c</field>
+            <value>
+                <stringValue>Work</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>npe01__WorkEmail__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Alternate_Email</name>
+        <label>Set Alternate Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>npe01__AlternateEmail__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Personal_Email</name>
+        <label>Set Personal Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>npe01__HomeEmail__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Work_Email</name>
+        <label>Set Work Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>npe01__WorkEmail__c</field>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Preferred_Email</targetReference>
+        </connector>
+        <filterFormula>AND(OR(
+AND(ISNEW(),LEN({!$Record.Email})&gt;0),
+ISCHANGED( {!$Record.Email} )      
+))</filterFormula>
+        <object>Contact</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>
